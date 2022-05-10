@@ -1,8 +1,8 @@
 <script lang="ts">
 import { Vue, Options } from "vue-class-component";
 import type { Pixel } from "@/models/pixel";
-import FileInput from "@/components/fileInput.vue";
-import ImageGrid from "@/components/imageGrid.vue";
+import FileInput from "@/components/FileInput.vue";
+import ImageGrid from "@/components/ImageGrid.vue";
 
 @Options({
   components: {
