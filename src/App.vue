@@ -26,12 +26,12 @@ export default class App extends Vue {
   }
 
   openConfigHandler(config: { labels: number[]; centroids: string[] }) {
+    console.log("aaas");
     this.colors = config.centroids;
     this.pixels = config.labels.map((label) => ({
       colorLabel: label,
       drawed: false,
     }));
-    localStorage.setItem("colors", JSON.stringify(this.colors));
   }
 
   updatePixelsDrawedHandler(index: number, drawed: boolean) {
@@ -70,7 +70,7 @@ export default class App extends Vue {
 
 <template>
   <h1>Minecraft Pixel Art Building Helper</h1>
-  <form class="config">
+  <div class="config">
     <div class="load-config-button">
       <FileInput @openConfig="openConfigHandler" />
     </div>
@@ -82,7 +82,7 @@ export default class App extends Vue {
       <label>Show label:</label>
       <input type="checkbox" v-model="showLabel" />
     </div>
-  </form>
+  </div>
   <ImageGrid
     :pixels="pixels"
     :colors="colors"
