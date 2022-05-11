@@ -12,7 +12,8 @@ export default class ImageGrid extends Vue {
   @Prop({ type: Array, default: [] }) readonly colors!: string[];
   @Prop({ type: Number, default: 50 }) readonly width!: number;
   @Prop({ type: Number, default: 50 }) readonly height!: number;
-  @Prop({ type: Number, default: 4 }) readonly size!: number;
+  @Prop({ type: Number, default: 24 }) readonly size!: number;
+  @Prop({ type: Boolean, default: true }) readonly showLabel!: boolean;
 
   get widthWithPx() {
     return `${this.width}px`;
@@ -30,6 +31,11 @@ export default class ImageGrid extends Vue {
     }
     return groups;
   }
+
+  changePixelDrawedStatus(rowIndex: number, colIndex: number) {
+    const index = rowIndex * this.width + colIndex;
+    this.$emit("update:pixelsDrawed", index, !this.pixels[index].drawed);
+  }
 }
 </script>
 
@@ -42,10 +48,14 @@ export default class ImageGrid extends Vue {
     >
       <Pixel
         class="pixel"
+        :style="{ width: sizeWithPx, height: sizeWithPx }"
         v-for="(pixel, index) in rowPixels"
         :key="index"
         :colorLabel="pixel.colorLabel"
         :colors="colors"
+        :showLabel="showLabel"
+        :drawed="pixel.drawed"
+        @click="() => changePixelDrawedStatus(rowIndex, index)"
       />
     </div>
   </div>
@@ -67,8 +77,6 @@ export default class ImageGrid extends Vue {
 }
 
 .pixel {
-  width: 24px;
-  height: 24px;
   flex-shrink: 0;
   flex-grow: 0;
 

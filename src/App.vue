@@ -1,18 +1,29 @@
 <script lang="ts">
 import { Vue, Options } from "vue-class-component";
+import { Watch } from "vue-property-decorator";
 import type { Pixel } from "@/models/pixel";
 import FileInput from "@/components/FileInput.vue";
 import ImageGrid from "@/components/ImageGrid.vue";
+import ColorInfoPanel from "./components/ColorInfoPanel.vue";
 
 @Options({
   components: {
     FileInput,
     ImageGrid,
+    ColorInfoPanel,
   },
 })
 export default class App extends Vue {
   pixels: Pixel[] = [];
   colors: string[] = [];
+  size = 28;
+  showLabel = true;
+
+  beforeMount() {
+    this.pixels = JSON.parse(localStorage.getItem("pixels") ?? "[]") ?? [];
+    this.colors = JSON.parse(localStorage.getItem("colors") ?? "[]") ?? [];
+    this.size = JSON.parse(localStorage.getItem("size") ?? "28") ?? 28;
+  }
 
   openConfigHandler(config: { labels: number[]; centroids: string[] }) {
     this.colors = config.centroids;
@@ -20,19 +31,80 @@ export default class App extends Vue {
       colorLabel: label,
       drawed: false,
     }));
+    localStorage.setItem("colors", JSON.stringify(this.colors));
+  }
+
+  updatePixelsDrawedHandler(index: number, drawed: boolean) {
+    this.pixels[index].drawed = drawed;
+    this.savePixels();
+  }
+
+  @Watch("pixels")
+  savePixels() {
+    localStorage.setItem("pixels", JSON.stringify(this.pixels));
+  }
+  @Watch("colors")
+  saveColors() {
+    localStorage.setItem("colors", JSON.stringify(this.colors));
+  }
+  @Watch("size")
+  saveSize() {
+    localStorage.setItem("size", JSON.stringify(this.size));
+  }
+
+  // get unique labels and its count
+  get colorsLabelCount() {
+    const labels = this.pixels.map((pixel) => pixel.colorLabel);
+    const uniqueLabels = [...new Set(labels)];
+    const labelCount = uniqueLabels.reduce(
+      (acc, label) => ({
+        ...acc,
+        [this.colors[label]]: labels.filter((l) => l === label).length,
+      }),
+      {}
+    );
+    return labelCount;
   }
 }
 </script>
 
 <template>
   <h1>Minecraft Pixel Art Building Helper</h1>
-  <FileInput @openConfig="openConfigHandler" />
-  <ImageGrid :pixels="pixels" :colors="colors" :width="50" :height="50" />
+  <form class="config">
+    <div class="load-config-button">
+      <FileInput @openConfig="openConfigHandler" />
+    </div>
+    <div class="size-input">
+      <label>Size:</label>
+      <input type="number" v-model="size" />
+    </div>
+    <div class="show-label">
+      <label>Show label:</label>
+      <input type="checkbox" v-model="showLabel" />
+    </div>
+  </form>
+  <ImageGrid
+    :pixels="pixels"
+    :colors="colors"
+    :width="50"
+    :height="50"
+    :size="size"
+    :showLabel="showLabel"
+    @update:pixelsDrawed="updatePixelsDrawedHandler"
+  />
+  <ColorInfoPanel :colors="colors" :colorsLabelCount="colorsLabelCount" />
 </template>
 
 <style lang="scss" scoped></style>
 <style lang="scss">
+@import url("https://fonts.googleapis.com/css2?family=Inter&display=block");
 * {
   box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+.config {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 </style>
