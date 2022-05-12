@@ -71,7 +71,7 @@ export default class ImageGrid extends Vue {
 
 .pixel-row {
   display: flex;
-  &:nth-child(4n + 1) {
+  &:nth-child(4n) {
     border-bottom: 1px solid #ccc;
   }
 }
@@ -80,7 +80,7 @@ export default class ImageGrid extends Vue {
   flex-shrink: 0;
   flex-grow: 0;
 
-  &:nth-child(4n + 1) {
+  &:nth-child(4n) {
     border-right: 1px solid #ccc;
   }
 }

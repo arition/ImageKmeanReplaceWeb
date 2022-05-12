@@ -17,6 +17,8 @@ export default class App extends Vue {
   pixels: Pixel[] = [];
   colors: string[] = [];
   size = 28;
+  width = 48;
+  height = 64;
   showLabel = true;
 
   beforeMount() {
@@ -78,6 +80,14 @@ export default class App extends Vue {
       <label>Size:</label>
       <input type="number" v-model="size" />
     </div>
+    <div class="size-input">
+      <label>Width:</label>
+      <input type="number" v-model="width" />
+    </div>
+    <div class="size-input">
+      <label>Height:</label>
+      <input type="number" v-model="height" />
+    </div>
     <div class="show-label">
       <label>Show label:</label>
       <input type="checkbox" v-model="showLabel" />
@@ -86,8 +96,8 @@ export default class App extends Vue {
   <ImageGrid
     :pixels="pixels"
     :colors="colors"
-    :width="50"
-    :height="50"
+    :width="width"
+    :height="height"
     :size="size"
     :showLabel="showLabel"
     @update:pixelsDrawed="updatePixelsDrawedHandler"
